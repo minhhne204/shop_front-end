@@ -5,3 +5,6 @@ button {
 button:hover {
   transform: translateY(-1px);
 }
+body {
+  font-family: "Rajdhani", sans-serif;
+}
