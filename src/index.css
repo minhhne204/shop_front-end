@@ -1,0 +1,10 @@
+@import "tailwindcss";
+button {
+  transition: all 0.3s ease;
+}
+button:hover {
+  transform: translateY(-1px);
+}
+body {
+  font-family: "Rajdhani", sans-serif;
+}
