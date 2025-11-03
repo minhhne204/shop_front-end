@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeInDown } from "/src/animations/fadeIn.js";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaUser } from "react-icons/fa";
 import { HiOutlineMenu, HiX } from "react-icons/hi";
 import { useCart } from "../context/CartContext";
 
@@ -10,10 +10,14 @@ const Navbar = () => {
   const [sticky, setSticky] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const [keyword, setKeyword] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const { totalQuantity } = useCart();
+
+  // ✅ Giả lập login (sau này nối backend)
+  const [user, setUser] = useState(null); // null = chưa đăng nhập
 
   useEffect(() => {
     const handleScroll = () => setSticky(window.scrollY > 50);
@@ -34,7 +38,6 @@ const Navbar = () => {
     setDropdownOpen(false);
   };
 
-  // ✅ Hàm xử lý tìm kiếm
   const handleSearch = (e) => {
     e.preventDefault();
     if (keyword.trim() !== "") {
@@ -44,9 +47,13 @@ const Navbar = () => {
     }
   };
 
+  const handleLogout = () => {
+    setUser(null);
+    setAccountOpen(false);
+  };
+
   return (
     <motion.nav
-      variants={fadeInDown}
       initial="hidden"
       animate="show"
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
@@ -181,6 +188,73 @@ const Navbar = () => {
             )}
           </Link>
 
+          {/* Đăng nhập / Tài khoản */}
+          <div className="relative">
+            <button
+              onClick={() => setAccountOpen(!accountOpen)}
+              className="text-gray-700 text-lg hover:text-blue-500 transition"
+            >
+              <FaUser />
+            </button>
+
+            <AnimatePresence>
+              {accountOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.25 }}
+                  className="absolute right-0 mt-3 bg-white shadow-lg rounded-xl border border-gray-100 py-3 w-44 text-sm"
+                >
+                  {!user ? (
+                    <div className="flex flex-col">
+                      <Link
+                        to="/login"
+                        onClick={() => setAccountOpen(false)}
+                        className="px-4 py-2 hover:bg-gray-100"
+                      >
+                        Đăng nhập
+                      </Link>
+                      <Link
+                        to="/register"
+                        onClick={() => setAccountOpen(false)}
+                        className="px-4 py-2 hover:bg-gray-100"
+                      >
+                        Đăng ký
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col">
+                      <span className="px-4 py-2 text-gray-700 font-medium border-b">
+                        👋 {user.name}
+                      </span>
+                      <Link
+                        to="/profile"
+                        onClick={() => setAccountOpen(false)}
+                        className="px-4 py-2 hover:bg-gray-100"
+                      >
+                        Tài khoản của tôi
+                      </Link>
+                      <Link
+                        to="/orders"
+                        onClick={() => setAccountOpen(false)}
+                        className="px-4 py-2 hover:bg-gray-100"
+                      >
+                        Đơn hàng
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="px-4 py-2 text-left hover:bg-gray-100 text-red-500"
+                      >
+                        Đăng xuất
+                      </button>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           {/* Nút mở menu mobile */}
           <button
             className="md:hidden text-gray-800 text-2xl"
@@ -238,6 +312,33 @@ const Navbar = () => {
             <Link to="/policy" className="block hover:text-blue-500">
               Chính sách & Bảo hành
             </Link>
+
+            {/* Đăng nhập mobile */}
+            {!user ? (
+              <>
+                <Link to="/login" className="block hover:text-blue-500">
+                  Đăng nhập
+                </Link>
+                <Link to="/register" className="block hover:text-blue-500">
+                  Đăng ký
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/profile" className="block hover:text-blue-500">
+                  Tài khoản của tôi
+                </Link>
+                <Link to="/orders" className="block hover:text-blue-500">
+                  Đơn hàng
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="block text-left text-red-500"
+                >
+                  Đăng xuất
+                </button>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

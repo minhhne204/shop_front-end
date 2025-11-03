@@ -82,8 +82,8 @@ const Contact = () => {
               <p className="text-gray-600 mb-2">
                 📍 Địa chỉ: 123 Nguyễn Trãi, Hà Nội
               </p>
-              <p className="text-gray-600 mb-2">📞 Điện thoại: 0987 654 321</p>
-              <p className="text-gray-600">✉️ Email: support@finguer.vn</p>
+              <p className="text-gray-600 mb-2">📞 Điện thoại: 0909 999 999</p>
+              <p className="text-gray-600">✉️ Email: support@finguertoynime.vn</p>
             </div>
 
             <div className="overflow-hidden rounded-2xl shadow-lg h-64">

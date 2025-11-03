@@ -40,27 +40,31 @@ const AllProducts = () => {
 
   // ✅ Đọc query string từ URL (category hoặc filter)
   useEffect(() => {
-    const urlCategory = searchParams.get("category");
-    const urlFilter = searchParams.get("filter");
+  const urlCategory = searchParams.get("category");
+  const urlFilter = searchParams.get("filter");
+  const urlSearch = searchParams.get("search"); // ✅ thêm dòng này
 
-    if (urlFilter === "hot") {
-      setCategory("Hot");
-    } else if (urlFilter === "sale") {
-      setCategory("Sale");
-    } else if (urlCategory) {
-      const matched = categories.find(
-        (c) => c.toLowerCase().replace(/\s+/g, "-") === urlCategory
-      );
-      setCategory(matched || "All");
-    } else {
-      setCategory("All");
-    }
+  if (urlCategory) {
+    const matched = categories.find(
+      (c) => c.toLowerCase().replace(/\s+/g, "-") === urlCategory
+    );
+    if (matched) setCategory(matched);
+  } else if (urlFilter === "hot") {
+    setCategory("Hot");
+  } else if (urlFilter === "sale") {
+    setCategory("Sale");
+  } else {
+    setCategory("All");
+  }
 
-    // 🔧 Reset lại các bộ lọc khác khi chuyển link
-    setBrand("All");
-    setSearch("");
-    setCurrentPage(1);
-  }, [searchParams]);
+  // ✅ Nếu có ?search=..., thì set từ khóa vào state
+  if (urlSearch) {
+    setSearch(urlSearch);
+  }
+
+  setCurrentPage(1);
+}, [searchParams]);
+
 
   // === Lọc & sắp xếp sản phẩm ===
   const filteredProducts = useMemo(() => {

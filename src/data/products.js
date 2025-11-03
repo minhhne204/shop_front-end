@@ -3,7 +3,7 @@ export const products = [
     id: 1,
     name: "Mô hình Urara - Still in Love The Train Figure",
     price: 500000,
-    image: "",
+    image: "https://danfigure.vn/wp-content/uploads/2025/02/vn-11134207-7ras8-m5fw371p7pvc5a-400x400.webp",
     label: "Còn hàng",
     category: "Romance",
     description:

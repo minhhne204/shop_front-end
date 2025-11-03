@@ -53,7 +53,7 @@ const Footer = () => {
         <div>
           <h3 className="text-xl font-semibold text-white mb-3">Liên hệ</h3>
           <ul className="space-y-2 text-sm">
-            <li>📍 123 Nguyễn Văn Cừ, TP. Hồ Chí Minh</li>
+            <li>📍 123 Nguyễn Trãi, Hà Nội</li>
             <li>📞 0909 999 999</li>
             <li>📧 support@finguertoynime.vn</li>
           </ul>
