@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { products } from "../data/products";
+import { fetchProducts } from "../data/products";
 import { useCart } from "../context/CartContext";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,6 +7,8 @@ import { useSearchParams, Link, useNavigate } from "react-router-dom";
 
 const AllProducts = () => {
   const { addToCart } = useCart();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [brand, setBrand] = useState("All");
@@ -29,6 +31,7 @@ const AllProducts = () => {
     "Kimetsu No Yaiba",
     "Chainsaw Man",
   ];
+
   const brands = [
     "All",
     "Good Smile Company",
@@ -37,42 +40,50 @@ const AllProducts = () => {
     "Kotobukiya",
     "Alter",
   ];
-
-  // ✅ Đọc query string từ URL (category hoặc filter)
+//fetch dlieu
   useEffect(() => {
-  const urlCategory = searchParams.get("category");
-  const urlFilter = searchParams.get("filter");
-  const urlSearch = searchParams.get("search"); // ✅ thêm dòng này
+  const loadProducts = async () => {
+    try {
+      const data = await fetchProducts();
+      setProducts(data);
+    } catch (error) {
+      toast.error("Không thể tải danh sách sản phẩm!");
+    } finally {
+      setLoading(false);
+    }
+  };
+  loadProducts();
+}, []);
 
-  if (urlCategory) {
-    const matched = categories.find(
-      (c) => c.toLowerCase().replace(/\s+/g, "-") === urlCategory
-    );
-    if (matched) setCategory(matched);
-  } else if (urlFilter === "hot") {
-    setCategory("Hot");
-  } else if (urlFilter === "sale") {
-    setCategory("Sale");
-  } else {
-    setCategory("All");
-  }
+// lấy dl từ url
+  useEffect(() => {
+    const urlCategory = searchParams.get("category");
+    const urlFilter = searchParams.get("filter");
+    const urlSearch = searchParams.get("search");
 
-  // ✅ Nếu có ?search=..., thì set từ khóa vào state
-  if (urlSearch) {
-    setSearch(urlSearch);
-  }
+    if (urlCategory) {
+      const matched = categories.find(
+        (c) => c.toLowerCase().replace(/\s+/g, "-") === urlCategory
+      );
+      if (matched) setCategory(matched);
+    } else if (urlFilter === "hot") {
+      setCategory("Hot");
+    } else if (urlFilter === "sale") {
+      setCategory("Sale");
+    } else {
+      setCategory("All");
+    }
 
-  setCurrentPage(1);
-}, [searchParams]);
+    if (urlSearch) setSearch(urlSearch);
+    setCurrentPage(1);
+  }, [searchParams]);
 
-
-  // === Lọc & sắp xếp sản phẩm ===
   const filteredProducts = useMemo(() => {
-    let filtered = products;
+    let filtered = [...products];
 
     if (search.trim() !== "") {
       filtered = filtered.filter((p) =>
-        p.name.toLowerCase().includes(search.toLowerCase())
+        p.name?.toLowerCase().includes(search.toLowerCase())
       );
     }
 
@@ -82,7 +93,7 @@ const AllProducts = () => {
       filtered = filtered.filter((p) => p.isSale);
     } else if (category !== "All") {
       filtered = filtered.filter(
-        (p) => p.category.toLowerCase() === category.toLowerCase()
+        (p) => p.category?.toLowerCase() === category.toLowerCase()
       );
     }
 
@@ -91,15 +102,14 @@ const AllProducts = () => {
     }
 
     if (sort === "price-asc") {
-      filtered = [...filtered].sort((a, b) => a.price - b.price);
+      filtered.sort((a, b) => a.price - b.price);
     } else if (sort === "price-desc") {
-      filtered = [...filtered].sort((a, b) => b.price - a.price);
+      filtered.sort((a, b) => b.price - a.price);
     }
 
     return filtered;
-  }, [search, category, brand, sort]);
+  }, [products, search, category, brand, sort]);
 
-  // === Phân trang ===
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
   const startIndex = (currentPage - 1) * productsPerPage;
   const currentProducts = filteredProducts.slice(
@@ -107,7 +117,6 @@ const AllProducts = () => {
     startIndex + productsPerPage
   );
 
-  // === Tiêu đề động ===
   const getTitle = () => {
     if (category === "Hot") return "🔥 Sản phẩm nổi bật";
     if (category === "Sale") return "💸 Sản phẩm khuyến mãi";
@@ -115,7 +124,6 @@ const AllProducts = () => {
     return "Tất cả sản phẩm";
   };
 
-  // === Khi chọn danh mục bên sidebar ===
   const handleCategoryChange = (cat) => {
     setCategory(cat);
     setCurrentPage(1);
@@ -126,12 +134,19 @@ const AllProducts = () => {
     else
       navigate(`/products?category=${cat.toLowerCase().replace(/\s+/g, "-")}`);
 
-    window.scrollTo({ top: 0, behavior: "smooth" }); // 🔧 thêm dòng này
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  if (loading) {
+    return (
+      <div className="pt-28 pb-24 text-center text-gray-500">
+        ⏳ Đang tải sản phẩm...
+      </div>
+    );
+  }
 
   return (
     <main className="pt-28 pb-24 max-w-7xl mx-auto px-6">
-      {/* Breadcrumb */}
       <div className="mb-6 text-sm text-gray-500">
         <Link to="/" className="hover:text-blue-600">
           Trang chủ
@@ -140,7 +155,6 @@ const AllProducts = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {/* Sidebar */}
         <aside className="space-y-6">
           <div>
             <h3 className="font-semibold mb-2 border-b pb-1">
@@ -182,11 +196,10 @@ const AllProducts = () => {
           </div>
         </aside>
 
-        {/* Content */}
         <section className="md:col-span-3">
           <h2 className="text-2xl font-semibold mb-4">{getTitle()}</h2>
 
-          {/* Bộ lọc */}
+        
           <div className="flex flex-wrap items-center justify-between mb-6 gap-3">
             <input
               type="text"
@@ -213,7 +226,7 @@ const AllProducts = () => {
             </select>
           </div>
 
-          {/* Product Grid */}
+          
           {currentProducts.length === 0 ? (
             <p className="text-gray-500 italic">
               Không tìm thấy sản phẩm phù hợp.
@@ -230,13 +243,13 @@ const AllProducts = () => {
               >
                 {currentProducts.map((p) => (
                   <motion.div
-                    key={p.id}
+                    key={p._id}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.4 }}
                     className="border rounded-xl p-3 bg-white shadow hover:shadow-lg transition"
                   >
-                    <Link to={`/product/${p.id}`}>
+                    <Link to={`/product/${p._id}`}>
                       <img
                         src={
                           p.image ||
@@ -251,7 +264,7 @@ const AllProducts = () => {
                     </Link>
 
                     <p className="text-red-600 font-bold mb-2">
-                      {p.price.toLocaleString("vi-VN")} ₫
+                      {p.price?.toLocaleString("vi-VN")} ₫
                     </p>
                     <button
                       onClick={() => {
@@ -268,7 +281,7 @@ const AllProducts = () => {
             </AnimatePresence>
           )}
 
-          {/* Pagination */}
+          
           {totalPages > 1 && (
             <div className="flex justify-center mt-10 space-x-2">
               <button
@@ -280,7 +293,7 @@ const AllProducts = () => {
                     : "hover:bg-gray-100"
                 }`}
               >
-                ← Trước 
+                ← Trước
               </button>
 
               {[...Array(totalPages)].map((_, idx) => (

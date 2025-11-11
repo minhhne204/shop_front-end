@@ -1,269 +1,35 @@
-export const products = [
-  {
-    id: 1,
-    name: "Mô hình Urara - Still in Love The Train Figure",
-    price: 500000,
-    image: "https://danfigure.vn/wp-content/uploads/2025/02/vn-11134207-7ras8-m5fw371p7pvc5a-400x400.webp",
-    label: "Còn hàng",
-    category: "Romance",
-    description:
-      "Mô hình Urara tinh xảo lấy cảm hứng từ bộ Still in Love The Train Figure, được chế tác chi tiết và bền màu.",
-    isHot: false,
-    isSale: false,
-  },
-  {
-    id: 2,
-    name: "Mô hình Gojou Satoru - Jujutsu Kaisen Figure",
-    price: 350000,
-    image: "",
-    label: "Order",
-    category: "Anime",
-    description:
-      "Mô hình Gojou Satoru trong series Jujutsu Kaisen, phiên bản cực hiếm với chi tiết mắt ấn tượng.",
-    isHot: true,
-    isSale: false,
-  },
-  {
-    id: 3,
-    name: "Mô hình One Piece - Shanks Figure",
-    price: 350000,
-    image: "",
-    label: "Order",
-    category: "One Piece",
-    description:
-      "Shanks – Tứ Hoàng mạnh mẽ, mô hình cực đẹp dành cho fan One Piece, hoàn thiện bằng nhựa PVC cao cấp.",
-    isHot: false,
-    isSale: true,
-  },
-  {
-    id: 4,
-    name: "Mô hình Rem - Re:Zero",
-    price: 250000,
-    image: "",
-    label: "Còn hàng",
-    category: "Re:Zero",
-    description:
-      "Rem đáng yêu trong bộ trang phục maid quen thuộc, chi tiết và màu sắc chuẩn Anime Re:Zero.",
-    isHot: false,
-    isSale: false,
-  },
-  {
-    id: 5,
-    name: "Mô hình Levi Ackerman - Attack on Titan",
-    price: 420000,
-    image: "",
-    label: "Order",
-    category: "Attack on Titan",
-    description:
-      "Levi trong tư thế chém Titan cực ngầu, tạo hình chuẩn xác từng chi tiết giày và áo choàng.",
-    isHot: true,
-    isSale: false,
-  },
-  {
-    id: 6,
-    name: "Mô hình Mikasa Ackerman - Attack on Titan",
-    price: 400000,
-    image: "",
-    label: "Còn hàng",
-    category: "Attack on Titan",
-    description:
-      "Mikasa với vũ khí 3D Maneuver Gear đầy chi tiết, dành cho fan Attack on Titan chân chính.",
-    isHot: false,
-    isSale: false,
-  },
-  {
-    id: 7,
-    name: "Mô hình Rengoku Kyojuro - Demon Slayer",
-    price: 450000,
-    image: "",
-    label: "Order",
-    category: "Kimetsu No Yaiba",
-    description:
-      "Rengoku rực lửa với tạo hình năng động, chi tiết tóc và thanh kiếm được hoàn thiện tỉ mỉ.",
-    isHot: true,
-    isSale: false,
-  },
-  {
-    id: 8,
-    name: "Mô hình Tanjiro Kamado - Demon Slayer",
-    price: 300000,
-    image: "",
-    label: "Còn hàng",
-    category: "Kimetsu No Yaiba",
-    description:
-      "Tanjiro trong tư thế chiến đấu, chất liệu PVC cao cấp, bền màu, phù hợp để sưu tầm.",
-    isHot: false,
-    isSale: false,
-  },
-  {
-    id: 9,
-    name: "Mô hình Luffy - Gear 5",
-    price: 600000,
-    image: "",
-    label: "Order",
-    category: "One Piece",
-    description:
-      "Luffy Gear 5 phiên bản mới nhất, hiệu ứng tóc trắng và chi tiết cơ bắp cực kỳ sống động.",
-    isHot: true,
-    isSale: false,
-  },
-  {
-    id: 10,
-    name: "Mô hình Zoro - Enma Edition",
-    price: 520000,
-    image: "",
-    label: "Còn hàng",
-    category: "One Piece",
-    description:
-      "Zoro với thanh kiếm Enma, tạo hình ngầu và chi tiết giáp cực đẹp, phù hợp trưng bày.",
-    isHot: false,
-    isSale: true,
-  },
-  {
-    id: 11,
-    name: "Mô hình Naruto Uzumaki - Rasengan",
-    price: 380000,
-    image: "",
-    label: "Còn hàng",
-    category: "Naruto",
-    description:
-      "Naruto tung Rasengan cực kỳ chân thực, hiệu ứng năng lượng xanh nổi bật.",
-    isHot: false,
-    isSale: false,
-  },
-  {
-    id: 12,
-    name: "Mô hình Sasuke Uchiha - Susanoo Arm",
-    price: 400000,
-    image: "",
-    label: "Order",
-    category: "Naruto",
-    description:
-      "Sasuke cùng Susanoo, biểu tượng của sức mạnh Uchiha, mô hình chi tiết cao.",
-    isHot: false,
-    isSale: false,
-  },
-  {
-    id: 13,
-    name: "Mô hình Pikachu - Electric Shock",
-    price: 280000,
-    image: "",
-    label: "Còn hàng",
-    category: "Pokemon",
-    description:
-      "Pikachu tung chiêu điện cực dễ thương, phù hợp cho mọi lứa tuổi và fan Pokémon.",
-    isHot: false,
-    isSale: false,
-  },
-  {
-    id: 14,
-    name: "Mô hình Charizard - Flame Version",
-    price: 550000,
-    image: "",
-    label: "Order",
-    category: "Pokemon",
-    description:
-      "Charizard trong tư thế phun lửa, chi tiết lửa cam trong suốt cực kỳ ấn tượng.",
-    isHot: true,
-    isSale: false,
-  },
-  {
-    id: 15,
-    name: "Mô hình Aether - Genshin Impact",
-    price: 450000,
-    image: "",
-    label: "Còn hàng",
-    category: "Game",
-    description:
-      "Aether trong trang phục nguyên tố gió, được chế tác tỉ mỉ, dành riêng cho fan Genshin Impact.",
-    isHot: false,
-    isSale: false,
-  },
-  {
-    id: 16,
-    name: "Mô hình Klee - Genshin Impact",
-    price: 430000,
-    image: "",
-    label: "Order",
-    category: "Game",
-    description:
-      "Klee đáng yêu cùng bom mini, mô hình cực dễ thương dành cho fan Genshin Impact.",
-    isHot: true,
-    isSale: false,
-  },
-  {
-    id: 17,
-    name: "Mô hình Viego - League of Legends",
-    price: 500000,
-    image: "",
-    label: "Order",
-    category: "Game",
-    description:
-      "Viego – vị vua suy vong trong Liên Minh Huyền Thoại, với hiệu ứng bóng đen đầy ma mị.",
-    isHot: false,
-    isSale: false,
-  },
-  {
-    id: 18,
-    name: "Mô hình Ahri - League of Legends",
-    price: 480000,
-    image: "",
-    label: "Còn hàng",
-    category: "Game",
-    description:
-      "Ahri với đuôi chín và tạo dáng ma mị, mô hình cực được yêu thích trong cộng đồng game thủ.",
-    isHot: false,
-    isSale: true,
-  },
-  {
-    id: 19,
-    name: "Mô hình Makima - Chainsaw Man",
-    price: 300000,
-    image: "",
-    label: "Order",
-    category: "Chainsaw Man",
-    description:
-      "Makima với tạo hình thần thái, phù hợp trưng bày hoặc sưu tầm cho fan Chainsaw Man.",
-    isHot: true,
-    isSale: false,
-  },
-  {
-    id: 20,
-    name: "Mô hình Bulma - Dragon Ball",
-    price: 450000,
-    oldPrice: 550000,
-    image: "",
-    label: "Còn hàng",
-    category: "Dragon Ball",
-    description:
-      "Mô hình Bulma tạo dáng năng động, giảm giá đặc biệt cho fan Dragon Ball.",
-    isHot: false,
-    isSale: true,
-  },
-  {
-    id: 21,
-    name: "Mô hình Goku - Super Saiyan",
-    price: 500000,
-    oldPrice: 600000,
-    image: "",
-    label: "Order",
-    category: "Dragon Ball",
-    description:
-      "Goku Super Saiyan với hiệu ứng tóc vàng cực đẹp, chi tiết từng cơ bắp chân thực.",
-    isHot: true,
-    isSale: true,
-  },
-  {
-    id: 22,
-    name: "Mô hình Sanji - One Piece",
-    price: 400000,
-    oldPrice: 520000,
-    image: "",
-    label: "Còn hàng",
-    category: "One Piece",
-    description:
-      "Sanji với tạo dáng chiến đấu đặc trưng, chi tiết từng đường cơ thể và áo vest cực ngầu.",
-    isHot: false,
-    isSale: true,
-  },
-];
+export async function fetchProducts() {
+  try {
+    const res = await fetch("http://localhost:4001/api/products/get-All");
+    if (!res.ok) throw new Error("Không thể tải danh sách sản phẩm!");
+    const json = await res.json();
+    return json.data || json.products || []; 
+  } catch (err) {
+    console.error("❌ Lỗi khi tải sản phẩm:", err);
+    throw err;
+  }
+}
+
+
+export async function fetchProductById(id) {
+  try {
+    const res = await fetch(`http://localhost:4001/api/products/get-details/${id}`);
+    if (!res.ok) throw new Error("Không thể tải chi tiết sản phẩm!");
+    const json = await res.json();
+    return json.data || json.product || null; 
+  } catch (err) {
+    console.error(`❌ Lỗi khi tải sản phẩm ID ${id}:`, err);
+    throw err;
+  }
+}
+
+
+export async function fetchRelatedProducts(currentId) {
+  try {
+    const all = await fetchProducts();
+    return all.filter((p) => p._id !== currentId).slice(0, 4);
+  } catch (err) {
+    console.error("❌ Lỗi khi tải sản phẩm liên quan:", err);
+    return [];
+  }
+}

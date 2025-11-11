@@ -17,6 +17,8 @@ import Login from "./pages/Login";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./admin/AdminDashboard";
 import AdminProducts from "./pages/AdminProducts";
+import Checkout from "./pages/Checkout";
+import Orders from "./pages/Orders";
 
 function App() {
   return (
@@ -39,6 +41,8 @@ function App() {
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/policy" element={<Policy />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/orders" element={<Orders />} />
                   </Routes>
                 </main>
                 <Footer />

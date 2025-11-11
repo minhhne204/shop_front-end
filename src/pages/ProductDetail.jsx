@@ -1,13 +1,12 @@
-// src/pages/ProductDetail.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { products } from "/src/data/products.js";
 import { useCart } from "../context/CartContext";
 import { fadeInUp } from "/src/animations/fadeIn.js";
 import toast from "react-hot-toast";
+import { fetchProductById, fetchProducts } from "../data/products.js";
 
-// === Skeleton Component === //
+// 🧱 Component hiển thị khung tải tạm (Skeleton)
 const Skeleton = () => (
   <div className="animate-pulse grid grid-cols-1 md:grid-cols-2 gap-10 p-6">
     <div className="bg-gray-200 h-[520px] rounded-xl"></div>
@@ -22,7 +21,7 @@ const Skeleton = () => (
   </div>
 );
 
-// === Rating Stars Component === //
+// ⭐ Component hiển thị số sao đánh giá
 const RatingStars = ({ rating, reviews }) => {
   const filledStars = Math.floor(rating);
   const hasHalfStar = rating % 1 !== 0;
@@ -45,9 +44,25 @@ const RatingStars = ({ rating, reviews }) => {
   );
 };
 
-// === Related Products === //
+// 🧩 Component hiển thị sản phẩm liên quan
 const RelatedProducts = ({ productId }) => {
-  const related = products.filter((p) => p.id !== productId).slice(0, 4);
+  const [related, setRelated] = useState([]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await fetchAllProducts();
+        // Lọc bỏ sản phẩm hiện tại và lấy tối đa 4 sản phẩm liên quan
+        setRelated(data.filter((p) => p._id !== productId).slice(0, 4));
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    load();
+  }, [productId]);
+
+  if (!related.length) return null;
+
   return (
     <section className="max-w-7xl mx-auto px-6 mt-16">
       <h3 className="text-2xl font-semibold mb-6 text-gray-900">
@@ -56,8 +71,8 @@ const RelatedProducts = ({ productId }) => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {related.map((item) => (
           <Link
-            key={item.id}
-            to={`/product/${item.id}`}
+            key={item._id}
+            to={`/product/${item._id}`}
             className="bg-white rounded-2xl shadow-md hover:shadow-xl transition p-4 flex flex-col group"
           >
             <div className="relative w-full h-48 bg-gray-50 flex items-center justify-center overflow-hidden rounded-lg mb-3">
@@ -81,7 +96,7 @@ const RelatedProducts = ({ productId }) => {
   );
 };
 
-// === MAIN COMPONENT === //
+// 🧠 Component chính: Trang chi tiết sản phẩm
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -92,15 +107,21 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [mainImage, setMainImage] = useState("/placeholder.png");
 
-  // Fake loading to show skeleton effect
+  // Gọi API lấy chi tiết sản phẩm theo ID
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const found = products.find((p) => String(p.id) === String(id));
-      setProduct(found);
-      setMainImage(found?.image || "/placeholder.png");
-      setLoading(false);
-    }, 700);
-    return () => clearTimeout(timer);
+    const loadProduct = async () => {
+      try {
+        const data = await fetchProductById(id);
+        setProduct(data);
+        setMainImage(data.image || "/placeholder.png");
+      } catch (error) {
+        console.error(error);
+        toast.error("Không tìm thấy sản phẩm!");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProduct();
   }, [id]);
 
   if (loading) return <Skeleton />;
@@ -118,6 +139,7 @@ const ProductDetail = () => {
     );
   }
 
+  // Thêm sản phẩm vào giỏ hàng
   const onAddToCart = () => {
     addToCart({ ...product, quantity });
     toast.success("🛒 Đã thêm vào giỏ hàng!");
@@ -126,7 +148,7 @@ const ProductDetail = () => {
   return (
     <main className="pt-28">
       <section className="max-w-6xl mx-auto px-6 py-10">
-        {/* Breadcrumb */}
+        {/* Đường dẫn điều hướng (breadcrumb) */}
         <nav className="text-sm text-gray-500 mb-6">
           <Link to="/" className="hover:underline">Trang chủ</Link>
           <span className="mx-2">/</span>
@@ -136,7 +158,7 @@ const ProductDetail = () => {
         </nav>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
-          {/* Gallery */}
+          {/* Phần ảnh sản phẩm */}
           <motion.div
             variants={fadeInUp}
             initial="hidden"
@@ -152,12 +174,9 @@ const ProductDetail = () => {
               />
             </div>
 
-            {/* Thumbnails */}
+            {/* Ảnh nhỏ (thumbnail) */}
             <div className="flex gap-3 justify-center md:justify-start">
-              {(product.images && product.images.length > 0
-                ? product.images
-                : [product.image]
-              ).map((img, idx) => (
+              {(product.images?.length ? product.images : [product.image]).map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setMainImage(img || "/placeholder.png")}
@@ -178,7 +197,7 @@ const ProductDetail = () => {
             </div>
           </motion.div>
 
-          {/* Info */}
+          {/* Thông tin sản phẩm */}
           <motion.div
             variants={fadeInUp}
             initial="hidden"
@@ -187,7 +206,6 @@ const ProductDetail = () => {
           >
             <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
 
-            {/* Rating Stars */}
             <RatingStars rating={product.rating || 4.5} reviews={product.reviews || 32} />
 
             <p className="text-3xl font-extrabold text-blue-600">
@@ -195,10 +213,10 @@ const ProductDetail = () => {
             </p>
 
             <p className="text-gray-600 leading-relaxed">
-              {product.desc || "Mô tả ngắn sản phẩm đang cập nhật..."}
+              {product.description || "Mô tả sản phẩm đang được cập nhật..."}
             </p>
 
-            {/* Quantity + Buttons */}
+            {/* Số lượng và nút mua hàng */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div className="flex items-center border rounded-md overflow-hidden">
                 <button
@@ -245,16 +263,13 @@ const ProductDetail = () => {
             </div>
 
             <p className="text-sm text-gray-500 mt-4">
-              <strong>Lưu ý:</strong> Các sản phẩm order có thể thay đổi giá. Vui lòng liên hệ shop trước khi đặt hàng.
+              <strong>Lưu ý:</strong> Giá sản phẩm có thể thay đổi theo từng đợt nhập hàng.
             </p>
-
-            <button className="mt-3 bg-gray-800 text-white px-6 py-3 rounded-full hover:bg-gray-700 transition">
-              💬 Chat nhanh với Shop
-            </button>
           </motion.div>
         </div>
 
-        <RelatedProducts productId={product.id} />
+        {/* Phần sản phẩm liên quan */}
+        <RelatedProducts productId={product._id} />
       </section>
     </main>
   );

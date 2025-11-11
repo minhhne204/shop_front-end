@@ -3,7 +3,8 @@ import { useCart } from "../context/CartContext";
 import { Link } from "react-router-dom";
 
 const CartPage = () => {
-  const { cartItems, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, totalPrice, clearCart } =
+    useCart();
 
   if (!cartItems || cartItems.length === 0) {
     return (
@@ -33,7 +34,10 @@ const CartPage = () => {
           </thead>
           <tbody>
             {cartItems.map((item) => (
-              <tr key={item.id} className="border-t hover:bg-gray-50 transition">
+              <tr
+                key={item.id}
+                className="border-t hover:bg-gray-50 transition"
+              >
                 <td className="px-4 py-3 flex items-center gap-3">
                   <img
                     src={item.image}
@@ -62,7 +66,10 @@ const CartPage = () => {
                       min="1"
                       value={item.quantity}
                       onChange={(e) =>
-                        updateQuantity(item.id, Math.max(1, parseInt(e.target.value)))
+                        updateQuantity(
+                          item.id,
+                          Math.max(1, parseInt(e.target.value))
+                        )
                       }
                       className="w-12 text-center outline-none border-x"
                     />
@@ -109,9 +116,12 @@ const CartPage = () => {
               {(totalPrice ?? 0).toLocaleString("vi-VN")}₫
             </span>
           </p>
-          <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+          <Link
+            to="/checkout"
+            className="bg-blue-600 text-white px-6 py-3 mb-10 rounded-lg hover:bg-blue-700 transition inline-block"
+          >
             Thanh toán
-          </button>
+          </Link>
         </div>
       </div>
     </main>

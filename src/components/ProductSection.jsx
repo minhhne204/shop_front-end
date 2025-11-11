@@ -1,18 +1,26 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { products } from "/src/data/products.js";
 import { fadeInUp } from "../animations/fadeIn.js";
 import { Link } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
+import useProducts from "../hooks/useProducts.js";
 
-// Ảnh rỗng mặc định (nếu sản phẩm chưa có ảnh)
 const fallbackImage = "https://via.placeholder.com/300x300?text=No+Image";
 
-// Tạo danh sách lọc
-const hotProducts = products.filter((item) => item.isHot);
-const saleProducts = products.filter((item) => item.isSale);
-
 const ProductSection = () => {
+  // 🔥 Dùng custom hook để lấy dữ liệu sản phẩm
+  const { products, loading } = useProducts();
+
+  const hotProducts = products.filter((item) => item.isHot);
+  const saleProducts = products.filter((item) => item.isSale);
+
+  if (loading)
+    return (
+      <div className="py-20 text-center text-gray-500">
+        ⏳ Đang tải sản phẩm...
+      </div>
+    );
+
   return (
     <div className="px-6 md:px-16 py-12 space-y-16 font-rajdhani">
       {/* === TẤT CẢ SẢN PHẨM === */}
@@ -32,51 +40,12 @@ const ProductSection = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {products.slice(0, 8).map((item, index) => (
-            <Link key={item.id} to={`/product/${item.id}`}>
-              <motion.div
-                variants={fadeInUp}
-                initial="hidden"
-                animate="show"
-                transition={{ delay: index * 0.05 }}
-                className="bg-white p-4 rounded-2xl shadow hover:shadow-lg hover:-translate-y-1 transition"
-              >
-                <img
-                  src={item.image || fallbackImage}
-                  alt={item.name}
-                  className="w-full h-48 object-contain mb-3"
-                />
-                <h3 className="font-semibold text-gray-800 text-sm mb-1 line-clamp-2">
-                  {item.name}
-                </h3>
-                <p className="text-blue-600 font-bold">
-                  {item.price.toLocaleString("vi-VN")}₫
-                </p>
-              </motion.div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* === SẢN PHẨM HOT === */}
-      <section>
-        <div className="flex items-center justify-between border-b pb-2 mb-4">
-          <h2 className="text-lg md:text-xl font-semibold text-gray-800">
-            🔥 Sản phẩm hot
-          </h2>
-          <Link
-            to="/products?filter=hot"
-            className="text-sm md:text-base font-medium text-gray-800 hover:text-blue-500 transition"
-          >
-            Xem tất cả &rarr;
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {hotProducts.length > 0 ? (
-            hotProducts.slice(0, 8).map((item, index) => (
-              <Link key={item.id} to={`/product/${item.id}`}>
+        {products.length === 0 ? (
+          <p className="text-gray-500 italic">Chưa có sản phẩm nào.</p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {products.slice(0, 8).map((item, index) => (
+              <Link key={item._id} to={`/product/${item._id}`}>
                 <motion.div
                   variants={fadeInUp}
                   initial="hidden"
@@ -93,15 +62,58 @@ const ProductSection = () => {
                     {item.name}
                   </h3>
                   <p className="text-blue-600 font-bold">
-                    {item.price.toLocaleString("vi-VN")}₫
+                    {item.price?.toLocaleString("vi-VN")}₫
                   </p>
                 </motion.div>
               </Link>
-            ))
-          ) : (
-            <p className="text-gray-500">Chưa có sản phẩm hot nào.</p>
-          )}
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* === SẢN PHẨM HOT === */}
+      <section>
+        <div className="flex items-center justify-between border-b pb-2 mb-4">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-800">
+            🔥 Sản phẩm hot
+          </h2>
+          <Link
+            to="/products?filter=hot"
+            className="text-sm md:text-base font-medium text-gray-800 hover:text-blue-500 transition"
+          >
+            Xem tất cả &rarr;
+          </Link>
         </div>
+
+        {hotProducts.length === 0 ? (
+          <p className="text-gray-500 italic">Chưa có sản phẩm hot nào.</p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {hotProducts.slice(0, 8).map((item, index) => (
+              <Link key={item._id} to={`/product/${item._id}`}>
+                <motion.div
+                  variants={fadeInUp}
+                  initial="hidden"
+                  animate="show"
+                  transition={{ delay: index * 0.05 }}
+                  className="bg-white p-4 rounded-2xl shadow hover:shadow-lg hover:-translate-y-1 transition"
+                >
+                  <img
+                    src={item.image || fallbackImage}
+                    alt={item.name}
+                    className="w-full h-48 object-contain mb-3"
+                  />
+                  <h3 className="font-semibold text-gray-800 text-sm mb-1 line-clamp-2">
+                    {item.name}
+                  </h3>
+                  <p className="text-blue-600 font-bold">
+                    {item.price?.toLocaleString("vi-VN")}₫
+                  </p>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* === SẢN PHẨM GIẢM GIÁ === */}
@@ -118,10 +130,12 @@ const ProductSection = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {saleProducts.length > 0 ? (
-            saleProducts.slice(0, 8).map((item, index) => (
-              <Link key={item.id} to={`/product/${item.id}`}>
+        {saleProducts.length === 0 ? (
+          <p className="text-gray-500 italic">Chưa có sản phẩm giảm giá nào.</p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {saleProducts.slice(0, 8).map((item, index) => (
+              <Link key={item._id} to={`/product/${item._id}`}>
                 <motion.div
                   variants={fadeInUp}
                   initial="hidden"
@@ -139,7 +153,7 @@ const ProductSection = () => {
                   </h3>
                   <div className="flex items-center gap-2">
                     <p className="text-blue-600 font-bold">
-                      {item.price.toLocaleString("vi-VN")}₫
+                      {item.price?.toLocaleString("vi-VN")}₫
                     </p>
                     {item.oldPrice && (
                       <p className="text-gray-400 line-through text-sm">
@@ -152,11 +166,9 @@ const ProductSection = () => {
                   </span>
                 </motion.div>
               </Link>
-            ))
-          ) : (
-            <p className="text-gray-500">Chưa có sản phẩm giảm giá nào.</p>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );
