@@ -87,15 +87,15 @@ const AllProducts = () => {
       );
     }
 
-    if (category === "Hot") {
-      filtered = filtered.filter((p) => p.isHot);
-    } else if (category === "Sale") {
-      filtered = filtered.filter((p) => p.isSale);
-    } else if (category !== "All") {
-      filtered = filtered.filter(
-        (p) => p.category?.toLowerCase() === category.toLowerCase()
-      );
-    }
+     if (category === "Hot") {
+    filtered = filtered.filter((p) => p.tags?.includes("hot"));
+  } else if (category === "Sale") {
+    filtered = filtered.filter((p) => p.tags?.includes("sale"));
+  } else if (category !== "All") {
+    filtered = filtered.filter(
+      (p) => p.category?.toLowerCase() === category.toLowerCase()
+    );
+  }
 
     if (brand !== "All") {
       filtered = filtered.filter((p) => p.brand === brand);

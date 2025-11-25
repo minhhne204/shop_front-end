@@ -8,11 +8,10 @@ import useProducts from "../hooks/useProducts.js";
 const fallbackImage = "https://via.placeholder.com/300x300?text=No+Image";
 
 const ProductSection = () => {
-  // 🔥 Dùng custom hook để lấy dữ liệu sản phẩm
   const { products, loading } = useProducts();
 
-  const hotProducts = products.filter((item) => item.isHot);
-  const saleProducts = products.filter((item) => item.isSale);
+  const hotProducts = products.filter((item) => item.tags?.includes("hot"));
+  const saleProducts = products.filter((item) => item.tags?.includes("sale"));
 
   if (loading)
     return (

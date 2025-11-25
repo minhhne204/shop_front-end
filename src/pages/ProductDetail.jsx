@@ -51,7 +51,7 @@ const RelatedProducts = ({ productId }) => {
   useEffect(() => {
     const load = async () => {
       try {
-        const data = await fetchAllProducts();
+        const data = await fetchProducts();
         // Lọc bỏ sản phẩm hiện tại và lấy tối đa 4 sản phẩm liên quan
         setRelated(data.filter((p) => p._id !== productId).slice(0, 4));
       } catch (err) {
@@ -209,7 +209,7 @@ const ProductDetail = () => {
             <RatingStars rating={product.rating || 4.5} reviews={product.reviews || 32} />
 
             <p className="text-3xl font-extrabold text-blue-600">
-              {product.price.toLocaleString("vi-VN")}₫
+              {(product?.price ?? 0).toLocaleString("vi-VN")}₫
             </p>
 
             <p className="text-gray-600 leading-relaxed">

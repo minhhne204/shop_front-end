@@ -19,11 +19,13 @@ import AdminDashboard from "./admin/AdminDashboard";
 import AdminProducts from "./pages/AdminProducts";
 import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
+import ScrollToTop from "./animations/scroll";
 
 function App() {
   return (
     <CartProvider>
       <Router>
+        <ScrollToTop/>
         <Routes>
           {/* CLIENT LAYOUT */}
           <Route
