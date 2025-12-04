@@ -1,17 +1,15 @@
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+import axios from 'axios'
 
-export const fetchProducts = async ({ page = 1, limit = 8, category, q } = {}) => {
-  const params = new URLSearchParams();
-  params.set("_page", page);
-  params.set("_limit", limit);
-  params.set("_sort", "createdAt");
-  params.set("_order", "desc");
+const api = axios.create({
+  baseURL: 'http://localhost:5000/api'
+})
 
-  if (category) params.set("categories_like", category);
-  if (q) params.set("q", q);
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
 
-  const res = await fetch(`${BASE_URL}/products?${params.toString()}`);
-  const data = await res.json();
-  const total = Number(res.headers.get("x-total-count") || data.length);
-  return { data, total };
-};
+export default api

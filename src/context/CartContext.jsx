@@ -1,83 +1,91 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from 'react'
+import api from '../services/api'
+import { useAuth } from './AuthContext'
 
-const CartContext = createContext();
+const CartContext = createContext()
+
+export const useCart = () => useContext(CartContext)
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cart, setCart] = useState({ items: [] })
+  const [loading, setLoading] = useState(false)
+  const { user } = useAuth()
 
-  // === Load từ localStorage khi mở trang ===
   useEffect(() => {
-    const stored = localStorage.getItem("cart");
-    if (stored) setCartItems(JSON.parse(stored));
-  }, []);
+    if (user) {
+      fetchCart()
+    } else {
+      setCart({ items: [] })
+    }
+  }, [user])
 
-  // === Lưu lại mỗi khi giỏ hàng thay đổi ===
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItems));
-  }, [cartItems]);
+  const fetchCart = async () => {
+    try {
+      setLoading(true)
+      const res = await api.get('/cart')
+      setCart(res.data)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
-  // === Thêm sản phẩm vào giỏ ===
-  const addToCart = (product) => {
-    setCartItems((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      } else {
-        return [...prev, { ...product, quantity: 1 }];
-      }
-    });
-  };
+  const addToCart = async (productId, quantity = 1) => {
+    try {
+      const res = await api.post('/cart/add', { productId, quantity })
+      setCart(res.data)
+    } catch (error) {
+      throw error
+    }
+  }
 
-  // === Xoá 1 sản phẩm ===
-  const removeFromCart = (id) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
-  };
+  const updateQuantity = async (productId, quantity) => {
+    try {
+      const res = await api.put('/cart/update', { productId, quantity })
+      setCart(res.data)
+    } catch (error) {
+      throw error
+    }
+  }
 
-  // === Cập nhật số lượng (sửa lỗi tăng ảo) ===
-  const updateQuantity = (id, newQuantity) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, newQuantity) } // Không cho <1
-          : item
-      )
-    );
-  };
+  const removeFromCart = async (productId) => {
+    try {
+      const res = await api.delete(`/cart/remove/${productId}`)
+      setCart(res.data)
+    } catch (error) {
+      throw error
+    }
+  }
 
-  // === Xoá toàn bộ ===
-  const clearCart = () => setCartItems([]);
+  const clearCart = async () => {
+    try {
+      await api.delete('/cart/clear')
+      setCart({ items: [] })
+    } catch (error) {
+      throw error
+    }
+  }
 
-  // === Tổng số tiền ===
-  const totalPrice = cartItems.reduce(
-    (sum, item) => sum + (item.price ?? 0) * item.quantity,
-    0
-  );
-
-  // === Tổng số sản phẩm (để hiện trên icon giỏ) ===
-  const totalQuantity = cartItems.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-  );
+  const cartCount = cart.items.reduce((sum, item) => sum + item.quantity, 0)
+  const cartTotal = cart.items.reduce((sum, item) => {
+    const price = item.product?.salePrice || item.product?.price || 0
+    return sum + price * item.quantity
+  }, 0)
 
   return (
-    <CartContext.Provider
-      value={{
-        cartItems,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        clearCart,
-        totalPrice,
-        totalQuantity,
-      }}
-    >
+    <CartContext.Provider value={{
+      cart,
+      loading,
+      addToCart,
+      updateQuantity,
+      removeFromCart,
+      clearCart,
+      cartCount,
+      cartTotal,
+      fetchCart
+    }}>
       {children}
     </CartContext.Provider>
-  );
-};
-
-export const useCart = () => useContext(CartContext);
+  )
+}
