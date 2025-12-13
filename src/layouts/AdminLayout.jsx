@@ -140,7 +140,7 @@ const AdminLayout = () => {
       >
         <div className="flex items-center h-[72px] px-6 border-b border-[#EBEBEB]">
           <Link to="/admin" className="text-[20px] font-semibold text-[#2D2D2D]">
-            GameForge
+            ToyNime
           </Link>
           <span className="ml-2 px-2 py-0.5 bg-[#7C9A82] text-white text-[11px] font-medium rounded">
             Admin

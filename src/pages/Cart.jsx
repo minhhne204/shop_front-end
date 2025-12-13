@@ -66,64 +66,82 @@ const Cart = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <div className="bg-white rounded-2xl border border-[#EBEBEB] overflow-hidden">
-            {cart.items.map((item, index) => (
-              <div
-                key={item.product._id}
-                className={`flex gap-5 p-5 ${index !== cart.items.length - 1 ? 'border-b border-[#EBEBEB]' : ''}`}
-              >
-                <Link to={`/san-pham/${item.product.slug}`} className="w-24 h-24 flex-shrink-0 bg-[#F5F5F3] rounded-xl overflow-hidden">
-                  <img
-                    src={item.product.images?.[0] || '/placeholder.jpg'}
-                    alt={item.product.name}
-                    className="w-full h-full object-cover"
-                  />
-                </Link>
-                <div className="flex-1 min-w-0">
-                  <Link
-                    to={`/san-pham/${item.product.slug}`}
-                    className="text-[15px] font-medium text-[#2D2D2D] hover:text-[#7C9A82] transition-colors line-clamp-2"
-                  >
-                    {item.product.name}
+            {cart.items.map((item, index) => {
+              const getItemPrice = () => {
+                if (item.variantId && item.product?.hasVariants) {
+                  const variant = item.product.variants?.find(v => v._id === item.variantId)
+                  if (variant) {
+                    return variant.salePrice || variant.price || item.product.salePrice || item.product.price
+                  }
+                }
+                return item.product.salePrice || item.product.price
+              }
+              const itemPrice = getItemPrice()
+
+              return (
+                <div
+                  key={`${item.product._id}-${item.variantId || 'default'}`}
+                  className={`flex gap-5 p-5 ${index !== cart.items.length - 1 ? 'border-b border-[#EBEBEB]' : ''}`}
+                >
+                  <Link to={`/san-pham/${item.product.slug}`} className="w-24 h-24 flex-shrink-0 bg-[#F5F5F3] rounded-xl overflow-hidden">
+                    <img
+                      src={item.product.images?.[0] || '/placeholder.jpg'}
+                      alt={item.product.name}
+                      className="w-full h-full object-cover"
+                    />
                   </Link>
-                  <div className="text-[16px] font-semibold text-[#C45C4A] mt-2">
-                    {formatPrice(item.product.salePrice || item.product.price)}
-                  </div>
-                  <div className="flex items-center gap-4 mt-3">
-                    <div className="flex items-center border border-[#EBEBEB] rounded-lg overflow-hidden">
+                  <div className="flex-1 min-w-0">
+                    <Link
+                      to={`/san-pham/${item.product.slug}`}
+                      className="text-[15px] font-medium text-[#2D2D2D] hover:text-[#7C9A82] transition-colors line-clamp-2"
+                    >
+                      {item.product.name}
+                    </Link>
+                    {item.variantName && (
+                      <p className="text-[13px] text-[#7C9A82] mt-1">
+                        {item.product.variantType || 'Phiên bản'}: {item.variantName}
+                      </p>
+                    )}
+                    <div className="text-[16px] font-semibold text-[#C45C4A] mt-2">
+                      {formatPrice(itemPrice)}
+                    </div>
+                    <div className="flex items-center gap-4 mt-3">
+                      <div className="flex items-center border border-[#EBEBEB] rounded-lg overflow-hidden">
+                        <button
+                          onClick={() => updateQuantity(item.product._id, item.quantity - 1, item.variantId)}
+                          className="w-9 h-9 flex items-center justify-center text-[#6B6B6B] hover:bg-[#F5F5F3] transition-colors"
+                          disabled={item.quantity <= 1}
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                          </svg>
+                        </button>
+                        <span className="w-10 text-center text-[14px] font-medium text-[#2D2D2D]">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.product._id, item.quantity + 1, item.variantId)}
+                          className="w-9 h-9 flex items-center justify-center text-[#6B6B6B] hover:bg-[#F5F5F3] transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                        </button>
+                      </div>
                       <button
-                        onClick={() => updateQuantity(item.product._id, item.quantity - 1)}
-                        className="w-9 h-9 flex items-center justify-center text-[#6B6B6B] hover:bg-[#F5F5F3] transition-colors"
-                        disabled={item.quantity <= 1}
+                        onClick={() => removeFromCart(item.product._id, item.variantId)}
+                        className="text-[13px] text-[#C45C4A] hover:text-[#a34a3c] transition-colors"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                        </svg>
-                      </button>
-                      <span className="w-10 text-center text-[14px] font-medium text-[#2D2D2D]">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.product._id, item.quantity + 1)}
-                        className="w-9 h-9 flex items-center justify-center text-[#6B6B6B] hover:bg-[#F5F5F3] transition-colors"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
+                        Xoá
                       </button>
                     </div>
-                    <button
-                      onClick={() => removeFromCart(item.product._id)}
-                      className="text-[13px] text-[#C45C4A] hover:text-[#a34a3c] transition-colors"
-                    >
-                      Xoá
-                    </button>
+                  </div>
+                  <div className="text-right hidden sm:block">
+                    <span className="text-[16px] font-semibold text-[#2D2D2D]">
+                      {formatPrice(itemPrice * item.quantity)}
+                    </span>
                   </div>
                 </div>
-                <div className="text-right hidden sm:block">
-                  <span className="text-[16px] font-semibold text-[#2D2D2D]">
-                    {formatPrice((item.product.salePrice || item.product.price) * item.quantity)}
-                  </span>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 

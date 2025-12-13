@@ -175,9 +175,14 @@ const Checkout = () => {
         discount: discount
       }
 
-      const res = await api.post('/orders', orderData)
-      await fetchCart()
-      navigate(`/don-hang/${res.data._id}`, { state: { success: true } })
+      if (form.paymentMethod === 'vnpay') {
+        const res = await api.post('/vnpay/create-payment', orderData)
+        window.location.href = res.data.paymentUrl
+      } else {
+        const res = await api.post('/orders', orderData)
+        await fetchCart()
+        navigate(`/don-hang/${res.data._id}`, { state: { success: true } })
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Có lỗi xảy ra')
     } finally {
@@ -317,6 +322,23 @@ const Checkout = () => {
                   <p className="text-[13px] text-[#6B6B6B] mt-0.5">Chuyển khoản trước khi giao hàng</p>
                 </div>
               </label>
+              <label className={`flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-all ${form.paymentMethod === 'vnpay' ? 'border-[#7C9A82] bg-[#F0F5F1]' : 'border-[#EBEBEB] hover:border-[#7C9A82]'}`}>
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="vnpay"
+                  checked={form.paymentMethod === 'vnpay'}
+                  onChange={handleChange}
+                  className="w-4 h-4 text-[#7C9A82] focus:ring-[#7C9A82]"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14px] font-medium text-[#2D2D2D]">Thanh toán VNPay</span>
+                    <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418196384.png" alt="VNPay" className="h-5" />
+                  </div>
+                  <p className="text-[13px] text-[#6B6B6B] mt-0.5">Thanh toán qua cổng thanh toán VNPay</p>
+                </div>
+              </label>
             </div>
           </div>
 
@@ -340,38 +362,64 @@ const Checkout = () => {
             </h2>
 
             <div className="max-h-64 overflow-y-auto space-y-4 mb-5">
-              {cart.items.map((item) => (
-                <div key={item.product._id} className="flex gap-3">
-                  <div className="w-16 h-16 flex-shrink-0 bg-[#F5F5F3] rounded-lg overflow-hidden">
-                    <img
-                      src={item.product.images?.[0] || '/placeholder.jpg'}
-                      alt={item.product.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[13px] text-[#2D2D2D] line-clamp-2">{item.product.name}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[12px] text-[#9A9A9A]">x{item.quantity}</span>
-                      {item.product.salePrice && item.product.salePrice < item.product.price && (
-                        <span className="text-[10px] text-white bg-[#C45C4A] px-1.5 py-0.5 rounded">
-                          -{Math.round((1 - item.product.salePrice / item.product.price) * 100)}%
-                        </span>
+              {cart.items.map((item) => {
+                const getItemPrice = () => {
+                  if (item.variantId && item.product?.hasVariants) {
+                    const variant = item.product.variants?.find(v => v._id === item.variantId)
+                    if (variant) {
+                      return variant.salePrice || variant.price || item.product.salePrice || item.product.price
+                    }
+                  }
+                  return item.product.salePrice || item.product.price
+                }
+                const getOriginalPrice = () => {
+                  if (item.variantId && item.product?.hasVariants) {
+                    const variant = item.product.variants?.find(v => v._id === item.variantId)
+                    if (variant) {
+                      return variant.price || item.product.price
+                    }
+                  }
+                  return item.product.price
+                }
+                const itemPrice = getItemPrice()
+                const originalPrice = getOriginalPrice()
+
+                return (
+                  <div key={`${item.product._id}-${item.variantId || 'default'}`} className="flex gap-3">
+                    <div className="w-16 h-16 flex-shrink-0 bg-[#F5F5F3] rounded-lg overflow-hidden">
+                      <img
+                        src={item.product.images?.[0] || '/placeholder.jpg'}
+                        alt={item.product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] text-[#2D2D2D] line-clamp-2">{item.product.name}</p>
+                      {item.variantName && (
+                        <p className="text-[11px] text-[#7C9A82]">{item.variantName}</p>
+                      )}
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[12px] text-[#9A9A9A]">x{item.quantity}</span>
+                        {itemPrice < originalPrice && (
+                          <span className="text-[10px] text-white bg-[#C45C4A] px-1.5 py-0.5 rounded">
+                            -{Math.round((1 - itemPrice / originalPrice) * 100)}%
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[13px] font-medium text-[#2D2D2D]">
+                        {formatPrice(itemPrice * item.quantity)}
+                      </span>
+                      {itemPrice < originalPrice && (
+                        <p className="text-[11px] text-[#9A9A9A] line-through">
+                          {formatPrice(originalPrice * item.quantity)}
+                        </p>
                       )}
                     </div>
                   </div>
-                  <div className="text-right">
-                    <span className="text-[13px] font-medium text-[#2D2D2D]">
-                      {formatPrice((item.product.salePrice || item.product.price) * item.quantity)}
-                    </span>
-                    {item.product.salePrice && item.product.salePrice < item.product.price && (
-                      <p className="text-[11px] text-[#9A9A9A] line-through">
-                        {formatPrice(item.product.price * item.quantity)}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
 
             <div className="border-t border-[#EBEBEB] pt-5 space-y-4">
