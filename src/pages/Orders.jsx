@@ -87,6 +87,9 @@ const Orders = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[14px] text-[#2D2D2D] line-clamp-1">{item.name}</p>
+                        {item.variantName && (
+                          <p className="text-[12px] text-[#7C9A82] mt-0.5">Phiên bản: {item.variantName}</p>
+                        )}
                         <p className="text-[13px] text-[#9A9A9A] mt-1">x{item.quantity}</p>
                       </div>
                       <span className="text-[14px] font-medium text-[#2D2D2D]">{formatPrice(item.price * item.quantity)}</span>

@@ -8,6 +8,9 @@ const OrderDetail = () => {
   const location = useLocation()
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [showCancelModal, setShowCancelModal] = useState(false)
+  const [cancelReason, setCancelReason] = useState('')
+  const [cancelling, setCancelling] = useState(false)
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -44,13 +47,39 @@ const OrderDetail = () => {
   }
 
   const handleCancel = async () => {
-    if (!confirm('Bạn có chắc muốn hủy đơn hàng này?')) return
+    if (!cancelReason.trim()) {
+      alert('Vui lòng nhập lý do hủy đơn hàng')
+      return
+    }
+    setCancelling(true)
     try {
-      const res = await api.put(`/orders/${id}/cancel`)
+      const res = await api.put(`/orders/${id}/cancel`, { cancelReason: cancelReason.trim() })
       setOrder(res.data)
+      setShowCancelModal(false)
+      setCancelReason('')
     } catch (error) {
       alert(error.response?.data?.message || 'Không thể hủy đơn hàng')
+    } finally {
+      setCancelling(false)
     }
+  }
+
+  const getPaymentMethodText = (method) => {
+    const methods = {
+      cod: 'Thanh toán khi nhận hàng (COD)',
+      banking: 'Chuyển khoản ngân hàng',
+      vnpay: 'Thanh toán VNPay'
+    }
+    return methods[method] || method
+  }
+
+  const getPaymentStatusText = (status) => {
+    const statuses = {
+      pending: { text: 'Chờ thanh toán', color: 'text-[#B4956B]' },
+      paid: { text: 'Đã thanh toán', color: 'text-[#7C9A82]' },
+      failed: { text: 'Thanh toán thất bại', color: 'text-[#C45C4A]' }
+    }
+    return statuses[status] || { text: status, color: 'text-[#6B6B6B]' }
   }
 
   if (loading) return <Loading />
@@ -96,10 +125,30 @@ const OrderDetail = () => {
           <div>
             <span className="text-[#6B6B6B]">Phương thức thanh toán:</span>
             <p className="font-medium text-[#2D2D2D] mt-1">
-              {order.paymentMethod === 'cod' ? 'Thanh toán khi nhận hàng' : 'Chuyển khoản ngân hàng'}
+              {getPaymentMethodText(order.paymentMethod)}
             </p>
           </div>
+          {order.paymentMethod === 'vnpay' && (
+            <div>
+              <span className="text-[#6B6B6B]">Trạng thái thanh toán:</span>
+              <p className={`font-medium mt-1 ${getPaymentStatusText(order.paymentStatus).color}`}>
+                {getPaymentStatusText(order.paymentStatus).text}
+              </p>
+            </div>
+          )}
+          {order.promoCode && (
+            <div>
+              <span className="text-[#6B6B6B]">Mã giảm giá:</span>
+              <p className="font-medium text-[#7C9A82] mt-1">{order.promoCode}</p>
+            </div>
+          )}
         </div>
+        {order.status === 'cancelled' && order.cancelReason && (
+          <div className="mt-5 pt-5 border-t border-[#EBEBEB]">
+            <span className="text-[13px] text-[#6B6B6B]">Lý do hủy:</span>
+            <p className="text-[14px] text-[#C45C4A] mt-1">{order.cancelReason}</p>
+          </div>
+        )}
       </div>
 
       <div className="bg-white rounded-2xl border border-[#EBEBEB] p-6 mb-6">
@@ -134,6 +183,9 @@ const OrderDetail = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[14px] font-medium text-[#2D2D2D]">{item.name}</p>
+                {item.variantName && (
+                  <p className="text-[12px] text-[#7C9A82] mt-0.5">Phiên bản: {item.variantName}</p>
+                )}
                 <p className="text-[13px] text-[#6B6B6B] mt-1">
                   {formatPrice(item.price)} x {item.quantity}
                 </p>
@@ -169,11 +221,73 @@ const OrderDetail = () => {
 
       {order.status === 'pending' && (
         <button
-          onClick={handleCancel}
+          onClick={() => setShowCancelModal(true)}
           className="w-full border-2 border-[#C45C4A] text-[#C45C4A] py-4 rounded-xl text-[15px] font-medium hover:bg-[#FEF2F2] transition-colors"
         >
           Hủy đơn hàng
         </button>
+      )}
+
+      {showCancelModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 animate-fade-in">
+            <h3 className="text-[18px] font-semibold text-[#2D2D2D] mb-4">Hủy đơn hàng</h3>
+            <p className="text-[14px] text-[#6B6B6B] mb-4">Vui lòng cho chúng tôi biết lý do bạn muốn hủy đơn hàng này:</p>
+            <div className="space-y-3 mb-4">
+              {['Đổi ý, không muốn mua nữa', 'Muốn thay đổi sản phẩm', 'Tìm được giá rẻ hơn', 'Đặt nhầm sản phẩm'].map((reason) => (
+                <label key={reason} className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="cancelReason"
+                    value={reason}
+                    checked={cancelReason === reason}
+                    onChange={(e) => setCancelReason(e.target.value)}
+                    className="w-4 h-4 text-[#C45C4A] focus:ring-[#C45C4A]"
+                  />
+                  <span className="text-[14px] text-[#2D2D2D]">{reason}</span>
+                </label>
+              ))}
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="radio"
+                  name="cancelReason"
+                  value="other"
+                  checked={!['Đổi ý, không muốn mua nữa', 'Muốn thay đổi sản phẩm', 'Tìm được giá rẻ hơn', 'Đặt nhầm sản phẩm'].includes(cancelReason) && cancelReason !== ''}
+                  onChange={() => setCancelReason('')}
+                  className="w-4 h-4 mt-0.5 text-[#C45C4A] focus:ring-[#C45C4A]"
+                />
+                <span className="text-[14px] text-[#2D2D2D]">Lý do khác</span>
+              </label>
+            </div>
+            {!['Đổi ý, không muốn mua nữa', 'Muốn thay đổi sản phẩm', 'Tìm được giá rẻ hơn', 'Đặt nhầm sản phẩm'].includes(cancelReason) && (
+              <textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="Nhập lý do của bạn..."
+                rows={3}
+                className="w-full bg-white border border-[#EBEBEB] rounded-xl px-4 py-3 text-[14px] text-[#2D2D2D] placeholder-[#9A9A9A] focus:border-[#C45C4A] transition-colors resize-none mb-4"
+              />
+            )}
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowCancelModal(false)
+                  setCancelReason('')
+                }}
+                className="flex-1 bg-[#F5F5F3] text-[#2D2D2D] py-3 rounded-xl text-[14px] font-medium hover:bg-[#EBEBEB] transition-colors"
+              >
+                Quay lại
+              </button>
+              <button
+                onClick={handleCancel}
+                disabled={cancelling || !cancelReason.trim()}
+                className="flex-1 bg-[#C45C4A] text-white py-3 rounded-xl text-[14px] font-medium hover:bg-[#B04A3A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {cancelling ? 'Đang xử lý...' : 'Xác nhận hủy'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

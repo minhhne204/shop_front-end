@@ -16,6 +16,7 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1)
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState({ type: '', text: '' })
+  const [selectedVariant, setSelectedVariant] = useState(null)
 
   const { addToCart } = useCart()
   const { user, isInWishlist, addToWishlist, removeFromWishlist } = useAuth()
@@ -58,13 +59,43 @@ const ProductDetail = () => {
     }
   }
 
+  const getCurrentPrice = () => {
+    if (selectedVariant) {
+      return selectedVariant.salePrice || selectedVariant.price || product.salePrice || product.price
+    }
+    return product.salePrice || product.price
+  }
+
+  const getOriginalPrice = () => {
+    if (selectedVariant) {
+      return selectedVariant.price || product.price
+    }
+    return product.price
+  }
+
+  const getCurrentStock = () => {
+    if (selectedVariant) {
+      return selectedVariant.stock
+    }
+    return product.stock
+  }
+
   const handleAddToCart = async () => {
     if (!user) {
       setMessage({ type: 'error', text: 'Vui lòng đăng nhập để thêm vào giỏ hàng' })
       return
     }
+    if (product.hasVariants && !selectedVariant) {
+      setMessage({ type: 'error', text: 'Vui lòng chọn phiên bản sản phẩm' })
+      return
+    }
     try {
-      await addToCart(product._id, quantity)
+      await addToCart(
+        product._id,
+        quantity,
+        selectedVariant?._id || null,
+        selectedVariant?.name || null
+      )
       setMessage({ type: 'success', text: 'Đã thêm vào giỏ hàng' })
       setTimeout(() => setMessage({ type: '', text: '' }), 3000)
     } catch (error) {
@@ -147,32 +178,57 @@ const ProductDetail = () => {
                 {statusLabel.text}
               </span>
             )}
-            {product.stock > 0 && (
-              <span className="text-[13px] text-[#6B6B6B]">Còn {product.stock} sản phẩm</span>
+            {getCurrentStock() > 0 && (
+              <span className="text-[13px] text-[#6B6B6B]">Còn {getCurrentStock()} sản phẩm</span>
             )}
           </div>
 
           <h1 className="text-[26px] font-semibold text-[#2D2D2D] leading-tight mb-5">{product.name}</h1>
 
-          <div className="flex items-baseline gap-4 mb-8">
-            {product.salePrice ? (
+          <div className="flex items-baseline gap-4 mb-6">
+            {getCurrentPrice() < getOriginalPrice() ? (
               <>
                 <span className="text-[28px] font-semibold text-[#C45C4A]">
-                  {formatPrice(product.salePrice)}
+                  {formatPrice(getCurrentPrice())}
                 </span>
                 <span className="text-[18px] text-[#9A9A9A] line-through">
-                  {formatPrice(product.price)}
+                  {formatPrice(getOriginalPrice())}
                 </span>
                 <span className="bg-[#C45C4A] text-white text-[12px] font-medium px-2.5 py-1 rounded-full">
-                  -{Math.round((1 - product.salePrice / product.price) * 100)}%
+                  -{Math.round((1 - getCurrentPrice() / getOriginalPrice()) * 100)}%
                 </span>
               </>
             ) : (
               <span className="text-[28px] font-semibold text-[#2D2D2D]">
-                {formatPrice(product.price)}
+                {formatPrice(getCurrentPrice())}
               </span>
             )}
           </div>
+
+          {product.hasVariants && product.variants?.length > 0 && (
+            <div className="mb-6">
+              <span className="text-[14px] text-[#6B6B6B] block mb-3">
+                {product.variantType || 'Phiên bản'}: {selectedVariant ? <span className="text-[#2D2D2D] font-medium">{selectedVariant.name}</span> : <span className="text-[#C45C4A]">Chọn phiên bản</span>}
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {product.variants.filter(v => v.isActive).map((variant) => (
+                  <button
+                    key={variant._id}
+                    onClick={() => setSelectedVariant(variant)}
+                    className={`px-4 py-2 rounded-xl text-[14px] border-2 transition-all ${
+                      selectedVariant?._id === variant._id
+                        ? 'border-[#7C9A82] bg-[#F0F5F1] text-[#7C9A82] font-medium'
+                        : 'border-[#EBEBEB] text-[#6B6B6B] hover:border-[#7C9A82]'
+                    } ${variant.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    disabled={variant.stock === 0}
+                  >
+                    {variant.name}
+                    {variant.stock === 0 && ' (Hết hàng)'}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="flex items-center gap-4 mb-6">
             <span className="text-[14px] text-[#6B6B6B]">Số lượng:</span>
