@@ -37,6 +37,7 @@ import Wishlist from './pages/Wishlist'
 import PreOrder from './pages/PreOrder'
 import MyPreOrders from './pages/MyPreOrders'
 import UserStats from './pages/UserStats'
+import VNPayReturn from './pages/VNPayReturn'
 
 const AdminRoute = ({ children }) => {
   const { user, loading } = useAuth()
@@ -94,6 +95,7 @@ function App() {
                     <Route path="/pre-order/cua-toi" element={<MyPreOrders />} />
                     <Route path="/gio-hang" element={<Cart />} />
                     <Route path="/thanh-toan" element={<Checkout />} />
+                    <Route path="/thanh-toan/vnpay-return" element={<VNPayReturn />} />
                     <Route path="/dang-nhap" element={<Login />} />
                     <Route path="/dang-ky" element={<Register />} />
                     <Route path="/tai-khoan" element={<Account />} />

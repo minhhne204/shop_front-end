@@ -39,9 +39,13 @@ const Wishlist = () => {
     }
   }
 
-  const handleAddToCart = async (productId) => {
+  const handleAddToCart = async (product) => {
+    if (product.hasVariants && product.variants?.length > 0) {
+      window.location.href = `/san-pham/${product.slug}`
+      return
+    }
     try {
-      await addToCart(productId, 1)
+      await addToCart(product._id, 1)
     } catch (error) {
       console.error(error)
     }
@@ -116,10 +120,10 @@ const Wishlist = () => {
                 </div>
                 <div className="mt-4 flex gap-2">
                   <button
-                    onClick={() => handleAddToCart(product._id)}
+                    onClick={() => handleAddToCart(product)}
                     className="flex-1 py-2.5 bg-[#7C9A82] text-white text-[13px] font-medium rounded-xl hover:bg-[#6B8A71] transition-colors"
                   >
-                    Thêm vào giỏ
+                    {product.hasVariants ? 'Chọn phiên bản' : 'Thêm vào giỏ'}
                   </button>
                   <button
                     onClick={() => handleRemove(product._id)}

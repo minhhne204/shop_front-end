@@ -39,7 +39,7 @@ const Header = () => {
             to="/"
             className="text-[22px] font-semibold tracking-tight text-[#2D2D2D] hover:text-[#7C9A82] transition-colors duration-300"
           >
-            ToyNime
+            GameForge
           </Link>
 
           <nav className="hidden lg:flex items-center gap-8">

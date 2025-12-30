@@ -31,27 +31,31 @@ export const CartProvider = ({ children }) => {
     }
   }
 
-  const addToCart = async (productId, quantity = 1) => {
+  const addToCart = async (productId, quantity = 1, variantId = null, variantName = null) => {
     try {
-      const res = await api.post('/cart/add', { productId, quantity })
+      const res = await api.post('/cart/add', { productId, quantity, variantId, variantName })
       setCart(res.data)
     } catch (error) {
       throw error
     }
   }
 
-  const updateQuantity = async (productId, quantity) => {
+  const updateQuantity = async (productId, quantity, variantId = null) => {
     try {
-      const res = await api.put('/cart/update', { productId, quantity })
+      const res = await api.put('/cart/update', { productId, quantity, variantId })
       setCart(res.data)
     } catch (error) {
       throw error
     }
   }
 
-  const removeFromCart = async (productId) => {
+  const removeFromCart = async (productId, variantId = null) => {
     try {
-      const res = await api.delete(`/cart/remove/${productId}`)
+      let url = `/cart/remove/${productId}`
+      if (variantId) {
+        url += `?variantId=${variantId}`
+      }
+      const res = await api.delete(url)
       setCart(res.data)
     } catch (error) {
       throw error
@@ -69,7 +73,13 @@ export const CartProvider = ({ children }) => {
 
   const cartCount = cart.items.reduce((sum, item) => sum + item.quantity, 0)
   const cartTotal = cart.items.reduce((sum, item) => {
-    const price = item.product?.salePrice || item.product?.price || 0
+    let price = item.product?.salePrice || item.product?.price || 0
+    if (item.variantId && item.product?.hasVariants) {
+      const variant = item.product.variants?.find(v => v._id === item.variantId)
+      if (variant) {
+        price = variant.salePrice || variant.price || price
+      }
+    }
     return sum + price * item.quantity
   }, 0)
 

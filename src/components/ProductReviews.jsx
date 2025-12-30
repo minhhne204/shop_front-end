@@ -48,6 +48,7 @@ const ProductReviews = ({ slug }) => {
   const [form, setForm] = useState({ rating: 5, comment: '' })
   const [error, setError] = useState('')
   const [userReview, setUserReview] = useState(null)
+  const [canUserReview, setCanUserReview] = useState({ canReview: false, hasPurchased: false, hasReviewed: false })
 
   const fetchReviews = async (page = 1) => {
     try {
@@ -71,9 +72,25 @@ const ProductReviews = ({ slug }) => {
     }
   }
 
+  const checkCanReview = async () => {
+    if (!user) return
+    try {
+      const res = await api.get(`/products/${slug}/can-review`)
+      setCanUserReview(res.data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   useEffect(() => {
     fetchReviews()
   }, [slug])
+
+  useEffect(() => {
+    if (user) {
+      checkCanReview()
+    }
+  }, [user, slug])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -129,13 +146,18 @@ const ProductReviews = ({ slug }) => {
     <div className="bg-white rounded-2xl border border-[#EBEBEB] p-8">
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-[20px] font-semibold text-[#2D2D2D]">Đánh giá sản phẩm</h2>
-        {user && !userReview && !showForm && (
+        {user && canUserReview.canReview && !showForm && (
           <button
             onClick={() => setShowForm(true)}
             className="px-5 py-2.5 bg-[#7C9A82] text-white text-[14px] font-medium rounded-xl hover:bg-[#6B8A71] transition-colors"
           >
             Viết đánh giá
           </button>
+        )}
+        {user && !canUserReview.hasPurchased && !canUserReview.hasReviewed && (
+          <span className="text-[13px] text-[#9A9A9A] bg-[#F5F5F3] px-3 py-2 rounded-lg">
+            Mua sản phẩm để đánh giá
+          </span>
         )}
       </div>
 
@@ -239,7 +261,17 @@ const ProductReviews = ({ slug }) => {
             <div key={review._id} className="pb-6 border-b border-[#EBEBEB] last:border-0 last:pb-0">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <p className="text-[15px] font-medium text-[#2D2D2D]">{review.user.fullName}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-[15px] font-medium text-[#2D2D2D]">{review.user.fullName}</p>
+                    {review.isVerifiedPurchase && (
+                      <span className="flex items-center gap-1 text-[11px] text-[#7C9A82] bg-[#F0F5F1] px-2 py-0.5 rounded-full">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        Đã mua hàng
+                      </span>
+                    )}
+                  </div>
                   <p className="text-[13px] text-[#9A9A9A]">{formatDate(review.createdAt)}</p>
                 </div>
                 <StarRating rating={review.rating} size="sm" />

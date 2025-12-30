@@ -157,6 +157,9 @@ const AdminOrderDetail = () => {
                     <p className="text-[15px] font-medium text-[#2D2D2D] line-clamp-2">
                       {item.name || item.product?.name || 'Sản phẩm'}
                     </p>
+                    {item.variantName && (
+                      <p className="text-[12px] text-[#7C9A82] mt-1">Phiên bản: {item.variantName}</p>
+                    )}
                     <div className="flex items-center gap-4 mt-2">
                       <span className="text-[13px] text-[#6B6B6B]">
                         Đơn giá: {formatCurrency(item.price)}

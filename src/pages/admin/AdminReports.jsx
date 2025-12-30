@@ -6,20 +6,58 @@ const AdminReports = () => {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('daily')
+  const [dateRange, setDateRange] = useState({
+    startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0]
+  })
+  const [showDateFilter, setShowDateFilter] = useState(false)
 
   useEffect(() => {
     fetchReports()
   }, [])
 
-  const fetchReports = async () => {
+  const fetchReports = async (start, end) => {
+    setLoading(true)
     try {
-      const res = await api.get('/admin/reports')
+      let url = '/admin/reports'
+      if (start && end) {
+        url += `?startDate=${start}&endDate=${end}`
+      }
+      const res = await api.get(url)
       setData(res.data)
     } catch (error) {
       console.error(error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleDateFilter = () => {
+    fetchReports(dateRange.startDate, dateRange.endDate)
+    setShowDateFilter(false)
+  }
+
+  const handleQuickFilter = (days) => {
+    const end = new Date()
+    const start = new Date()
+    start.setDate(start.getDate() - days)
+    setDateRange({
+      startDate: start.toISOString().split('T')[0],
+      endDate: end.toISOString().split('T')[0]
+    })
+    fetchReports(start.toISOString().split('T')[0], end.toISOString().split('T')[0])
+  }
+
+  const handleMonthFilter = (monthsAgo) => {
+    const end = new Date()
+    const start = new Date()
+    start.setMonth(start.getMonth() - monthsAgo)
+    start.setDate(1)
+    setDateRange({
+      startDate: start.toISOString().split('T')[0],
+      endDate: end.toISOString().split('T')[0]
+    })
+    fetchReports(start.toISOString().split('T')[0], end.toISOString().split('T')[0])
   }
 
   const formatCurrency = (value) => {
@@ -79,9 +117,116 @@ const AdminReports = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-[24px] font-semibold text-[#2D2D2D]">Báo cáo</h1>
-        <p className="text-[14px] text-[#6B6B6B] mt-1">Thống kê doanh thu và hoạt động kinh doanh</p>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-[24px] font-semibold text-[#2D2D2D]">Báo cáo</h1>
+          <p className="text-[14px] text-[#6B6B6B] mt-1">Thống kê doanh thu và hoạt động kinh doanh</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => handleQuickFilter(7)}
+            className="px-3 py-2 text-[13px] bg-[#F5F5F3] rounded-lg hover:bg-[#EBEBEB] transition-colors"
+          >
+            7 ngày
+          </button>
+          <button
+            onClick={() => handleQuickFilter(30)}
+            className="px-3 py-2 text-[13px] bg-[#F5F5F3] rounded-lg hover:bg-[#EBEBEB] transition-colors"
+          >
+            30 ngày
+          </button>
+          <button
+            onClick={() => handleMonthFilter(0)}
+            className="px-3 py-2 text-[13px] bg-[#F5F5F3] rounded-lg hover:bg-[#EBEBEB] transition-colors"
+          >
+            Tháng này
+          </button>
+          <button
+            onClick={() => handleMonthFilter(3)}
+            className="px-3 py-2 text-[13px] bg-[#F5F5F3] rounded-lg hover:bg-[#EBEBEB] transition-colors"
+          >
+            3 tháng
+          </button>
+          <button
+            onClick={() => setShowDateFilter(!showDateFilter)}
+            className="px-3 py-2 text-[13px] bg-[#7C9A82] text-white rounded-lg hover:bg-[#6B8A71] transition-colors flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Tùy chọn
+          </button>
+        </div>
+      </div>
+
+      {showDateFilter && (
+        <div className="bg-white rounded-2xl border border-[#EBEBEB] p-4">
+          <div className="flex flex-wrap items-end gap-4">
+            <div>
+              <label className="block text-[13px] text-[#6B6B6B] mb-1">Từ ngày</label>
+              <input
+                type="date"
+                value={dateRange.startDate}
+                onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
+                className="px-3 py-2 border border-[#EBEBEB] rounded-lg text-[14px] focus:border-[#7C9A82] transition-colors"
+              />
+            </div>
+            <div>
+              <label className="block text-[13px] text-[#6B6B6B] mb-1">Đến ngày</label>
+              <input
+                type="date"
+                value={dateRange.endDate}
+                onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
+                className="px-3 py-2 border border-[#EBEBEB] rounded-lg text-[14px] focus:border-[#7C9A82] transition-colors"
+              />
+            </div>
+            <button
+              onClick={handleDateFilter}
+              className="px-5 py-2 bg-[#7C9A82] text-white rounded-lg text-[14px] font-medium hover:bg-[#6B8A71] transition-colors"
+            >
+              Áp dụng
+            </button>
+          </div>
+          {data?.dateRange && (
+            <p className="text-[12px] text-[#6B6B6B] mt-3">
+              Đang xem: {new Date(data.dateRange.start).toLocaleDateString('vi-VN')} - {new Date(data.dateRange.end).toLocaleDateString('vi-VN')}
+            </p>
+          )}
+        </div>
+      )}
+
+      <div className="bg-white rounded-2xl border border-[#7C9A82] p-5 mb-5">
+        <div className="flex items-center gap-3 mb-4">
+          <svg className="w-5 h-5 text-[#7C9A82]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          <h2 className="text-[16px] font-semibold text-[#2D2D2D]">
+            Thống kê theo khoảng thời gian
+            {data?.dateRange && (
+              <span className="font-normal text-[#6B6B6B] text-[13px] ml-2">
+                ({new Date(data.dateRange.start).toLocaleDateString('vi-VN')} - {new Date(data.dateRange.end).toLocaleDateString('vi-VN')})
+              </span>
+            )}
+          </h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-[#F0F5F1] rounded-xl p-4">
+            <p className="text-[12px] text-[#6B6B6B] mb-1">Doanh thu</p>
+            <p className="text-[18px] font-semibold text-[#7C9A82]">{formatCurrency(data?.revenue?.filtered)}</p>
+          </div>
+          <div className="bg-[#E3F2FD] rounded-xl p-4">
+            <p className="text-[12px] text-[#6B6B6B] mb-1">Tổng đơn hàng</p>
+            <p className="text-[18px] font-semibold text-[#1976D2]">{data?.orders?.filtered || 0}</p>
+          </div>
+          <div className="bg-[#E8F5E9] rounded-xl p-4">
+            <p className="text-[12px] text-[#6B6B6B] mb-1">Đã giao</p>
+            <p className="text-[18px] font-semibold text-[#4CAF50]">{data?.orders?.filteredDelivered || 0}</p>
+          </div>
+          <div className="bg-[#FEF2F2] rounded-xl p-4">
+            <p className="text-[12px] text-[#6B6B6B] mb-1">Đã hủy</p>
+            <p className="text-[18px] font-semibold text-[#C45C4A]">{data?.orders?.filteredCancelled || 0}</p>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">

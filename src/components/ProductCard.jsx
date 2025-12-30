@@ -2,13 +2,27 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 const ProductCard = ({ product }) => {
-  const { _id, name, slug, price, salePrice, images, status } = product
+  const { _id, name, slug, price, salePrice, images, status, hasVariants, variants } = product
   const { user, isInWishlist, addToWishlist, removeFromWishlist } = useAuth()
   const navigate = useNavigate()
 
   const formatPrice = (value) => {
     return new Intl.NumberFormat('vi-VN').format(value) + 'd'
   }
+
+  const getVariantPriceRange = () => {
+    if (!hasVariants || !variants || variants.length === 0) return null
+    const activeVariants = variants.filter(v => v.isActive !== false)
+    if (activeVariants.length === 0) return null
+
+    const prices = activeVariants.map(v => v.salePrice || v.price)
+    const minPrice = Math.min(...prices)
+    const maxPrice = Math.max(...prices)
+
+    return { minPrice, maxPrice, hasRange: minPrice !== maxPrice }
+  }
+
+  const variantPriceRange = getVariantPriceRange()
 
   const getStatusLabel = () => {
     switch (status) {
@@ -80,7 +94,17 @@ const ProductCard = ({ product }) => {
             {name}
           </h3>
           <div className="mt-3 flex items-baseline gap-2">
-            {salePrice ? (
+            {variantPriceRange ? (
+              variantPriceRange.hasRange ? (
+                <span className="text-[#2D2D2D] text-[16px] font-semibold">
+                  {formatPrice(variantPriceRange.minPrice)} - {formatPrice(variantPriceRange.maxPrice)}
+                </span>
+              ) : (
+                <span className="text-[#2D2D2D] text-[16px] font-semibold">
+                  {formatPrice(variantPriceRange.minPrice)}
+                </span>
+              )
+            ) : salePrice ? (
               <>
                 <span className="text-[#C45C4A] text-[16px] font-semibold">{formatPrice(salePrice)}</span>
                 <span className="text-[#9A9A9A] text-[13px] line-through">{formatPrice(price)}</span>

@@ -318,7 +318,14 @@ const AdminProducts = () => {
                             className="w-14 h-14 rounded-xl object-cover bg-[#F5F5F3]"
                           />
                           <div className="min-w-0">
-                            <p className="text-[14px] font-medium text-[#2D2D2D] line-clamp-1">{product.name}</p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-[14px] font-medium text-[#2D2D2D] line-clamp-1">{product.name}</p>
+                              {product.hasVariants && (
+                                <span className="px-2 py-0.5 bg-[#F3E8FD] text-[#8A6B9A] text-[10px] font-medium rounded-full whitespace-nowrap">
+                                  {product.variants?.length || 0} biến thể
+                                </span>
+                              )}
+                            </div>
                             <p className="text-[12px] text-[#6B6B6B] mt-0.5">
                               {product.category?.name} - {product.brand?.name}
                             </p>
