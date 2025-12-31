@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import api from '../services/api'
 import ProductCard from '../components/ProductCard'
 import Loading from '../components/Loading'
+import FallingFlowers from '../components/FallingFlowers'
 
 const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([])
@@ -55,6 +56,7 @@ const Home = () => {
 
   return (
     <div className="animate-fade-in">
+      <FallingFlowers/>
       {banners.length > 0 ? (
         <div className="relative h-[500px] md:h-[600px] overflow-hidden group">
           {banners.map((banner, index) => (

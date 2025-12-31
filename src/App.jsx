@@ -38,6 +38,8 @@ import PreOrder from './pages/PreOrder'
 import MyPreOrders from './pages/MyPreOrders'
 import UserStats from './pages/UserStats'
 import VNPayReturn from './pages/VNPayReturn'
+import ScrollToTop from './components/ScrollToTop'
+import FallingFlowers from './components/FallingFlowers'
 
 const AdminRoute = ({ children }) => {
   const { user, loading } = useAuth()
@@ -62,6 +64,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <CartProvider>
+          <ScrollToTop/>
           <Routes>
             <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
               <Route index element={<Dashboard />} />
