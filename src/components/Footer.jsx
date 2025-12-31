@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           <div className="lg:col-span-1">
             <Link to="/" className="inline-block text-[22px] font-semibold text-[#2D2D2D] mb-4">
-              GameForge
+              ToyNime
             </Link>
             <p className="text-[14px] text-[#6B6B6B] leading-relaxed max-w-[280px]">
               Chuyên cung cấp mô hình chính hãng chất lượng cao với giá tốt nhất tại Việt Nam.
@@ -92,7 +92,7 @@ const Footer = () => {
                 <svg className="w-4 h-4 text-[#9A9A9A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                contact@gameforge.vn
+                contact@toynime.vn
               </li>
               <li className="flex items-center gap-3 text-[14px] text-[#6B6B6B]">
                 <svg className="w-4 h-4 text-[#9A9A9A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,7 +113,7 @@ const Footer = () => {
 
         <div className="mt-14 pt-8 border-t border-[#EBEBEB] flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-[13px] text-[#9A9A9A]">
-            2025 GameForge. All rights reserved.
+            2025 ToyNime. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link to="/chinh-sach/privacy" className="text-[13px] text-[#9A9A9A] hover:text-[#6B6B6B] transition-colors">
