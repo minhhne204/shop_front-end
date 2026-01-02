@@ -14,7 +14,7 @@ const Footer = () => {
             </p>
             <div className="flex items-center gap-3 mt-6">
               <a
-                href="#"
+                href=""
                 className="w-10 h-10 rounded-full bg-[#F5F5F3] flex items-center justify-center text-[#6B6B6B] hover:bg-[#7C9A82] hover:text-white transition-all duration-200"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -22,7 +22,7 @@ const Footer = () => {
                 </svg>
               </a>
               <a
-                href="#"
+                href=""
                 className="w-10 h-10 rounded-full bg-[#F5F5F3] flex items-center justify-center text-[#6B6B6B] hover:bg-[#7C9A82] hover:text-white transition-all duration-200"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -105,7 +105,7 @@ const Footer = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                TP. Hồ Chí Minh, Việt Nam
+                TP. Hà Nội, Việt Nam
               </li>
             </ul>
           </div>
