@@ -88,9 +88,11 @@ const Header = () => {
             {user && (
               <Link
                 to="/yeu-thich"
-                className="relative p-2 rounded-full hover:bg-[#F1F4F2] transition"
+                className="relative p-2.5 text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors duration-200"
               >
-                ❤️
+                <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
               </Link>
             )}
 
@@ -112,33 +114,88 @@ const Header = () => {
               <div className="relative">
                 <button
                   onClick={() => setMenuOpen(!menuOpen)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#E5E5E5] hover:border-[#7C9A82] transition"
+                  className="flex items-center gap-2 pl-4 pr-3 py-2 bg-white border border-[#EBEBEB] rounded-full text-[14px] text-[#2D2D2D] hover:border-[#7C9A82] transition-all duration-200"
                 >
-                  <span className="max-w-[90px] truncate text-[14px]">
-                    {user.fullName}
-                  </span>
-                  ⌄
+                  <span className="max-w-[100px] truncate">{user.fullName}</span>
+                  <svg className={`w-4 h-4 text-[#9A9A9A] transition-transform duration-200 ${menuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                  </svg>
                 </button>
-
                 {menuOpen && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-                    <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.12)] border z-20 overflow-hidden animate-scale-in">
-                      <MenuLink to="/tai-khoan" text="Tài khoản" close={setMenuOpen} />
-                      <MenuLink to="/don-hang" text="Đơn hàng" close={setMenuOpen} />
-                      <MenuLink to="/thong-ke" text="Thống kê" close={setMenuOpen} />
-                      <MenuLink to="/yeu-thich" text="Yêu thích" close={setMenuOpen} />
-                      {user.role === 'admin' && (
-                        <MenuLink to="/admin" text="Quản trị" close={setMenuOpen} />
-                      )}
-                      <div className="border-t my-1" />
-                      <button
-                        onClick={() => {
-                          logout()
-                          setMenuOpen(false)
-                        }}
-                        className="w-full text-left px-4 py-2.5 text-[#C45C4A] hover:bg-[#FEF2F2]"
+                    <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] border border-[#EBEBEB] py-2 z-20 animate-scale-in">
+                      <Link
+                        to="/tai-khoan"
+                        className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-[#6B6B6B] hover:text-[#2D2D2D] hover:bg-[#FAFAF8] transition-colors"
+                        onClick={() => setMenuOpen(false)}
                       >
+                        <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Tài khoản
+                      </Link>
+                      <Link
+                        to="/don-hang"
+                        className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-[#6B6B6B] hover:text-[#2D2D2D] hover:bg-[#FAFAF8] transition-colors"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        Đơn hàng
+                      </Link>
+                      <Link
+                        to="/thong-ke"
+                        className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-[#6B6B6B] hover:text-[#2D2D2D] hover:bg-[#FAFAF8] transition-colors"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        Thống kê
+                      </Link>
+                      <Link
+                        to="/pre-order/cua-toi"
+                        className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-[#6B6B6B] hover:text-[#2D2D2D] hover:bg-[#FAFAF8] transition-colors"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Pre-order của tôi
+                      </Link>
+                      <Link
+                        to="/yeu-thich"
+                        className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-[#6B6B6B] hover:text-[#2D2D2D] hover:bg-[#FAFAF8] transition-colors"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        Yêu thích
+                      </Link>
+                      {user.role === 'admin' && (
+                        <Link
+                          to="/admin"
+                          className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-[#6B6B6B] hover:text-[#2D2D2D] hover:bg-[#FAFAF8] transition-colors"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          Quản trị
+                        </Link>
+                      )}
+                      <div className="my-1.5 mx-3 border-t border-[#EBEBEB]" />
+                      <button
+                        onClick={() => { logout(); setMenuOpen(false) }}
+                        className="flex items-center gap-3 w-full px-4 py-2.5 text-[14px] text-[#C45C4A] hover:bg-[#FEF2F2] transition-colors"
+                      >
+                        <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
                         Đăng xuất
                       </button>
                     </div>
