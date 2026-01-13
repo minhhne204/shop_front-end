@@ -195,9 +195,30 @@ const Cart = () => {
                             />
                           </svg>
                         </button>
-                        <span className="w-10 text-center text-[14px] font-medium text-[#2D2D2D]">
-                          {item.quantity}
-                        </span>
+                        <input
+                          type="number"
+                          min={1}
+                          max={itemStock}
+                          value={item.quantity}
+                          onChange={(e) => {
+                            let value = Number(e.target.value);
+
+                            if (isNaN(value)) return;
+                            if (value < 1) value = 1;
+                            if (value > itemStock) value = itemStock;
+
+                            updateQuantity(
+                              item.product._id,
+                              value,
+                              item.variantId
+                            );
+                          }}
+                          className="w-10 h-9 text-center text-[14px] font-medium text-[#2D2D2D]
+             outline-none border-none bg-transparent
+             appearance-none [&::-webkit-inner-spin-button]:appearance-none
+             [&::-webkit-outer-spin-button]:appearance-none"
+                        />
+
                         <button
                           onClick={() =>
                             updateQuantity(
