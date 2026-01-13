@@ -191,7 +191,7 @@ const Checkout = () => {
   }
 
   if (cart.items.length === 0) {
-    navigate('/gio-hang')
+    navigate('/thanh-toan-thanh-cong')
     return null
   }
 

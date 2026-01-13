@@ -40,6 +40,7 @@ import UserStats from './pages/UserStats'
 import VNPayReturn from './pages/VNPayReturn'
 import ScrollToTop from './components/ScrollToTop'
 import FallingFlowers from './components/FallingFlowers'
+import CheckoutSuccess from './pages/CheckoutSuccess'
 
 const AdminRoute = ({ children }) => {
   const { user, loading } = useAuth()
@@ -98,7 +99,7 @@ function App() {
                     <Route path="/pre-order/cua-toi" element={<MyPreOrders />} />
                     <Route path="/gio-hang" element={<Cart />} />
                     <Route path="/thanh-toan" element={<Checkout />} />
-                    <Route path='/thanh-toan-thanh-cong' element={<PaymentAddress/>}/>
+                    <Route path="/thanh-toan-thanh-cong" element={<CheckoutSuccess />} />
                     <Route path="/thanh-toan/vnpay-return" element={<VNPayReturn />} />
                     <Route path="/dang-nhap" element={<Login />} />
                     <Route path="/dang-ky" element={<Register />} />
