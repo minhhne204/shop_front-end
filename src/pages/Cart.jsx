@@ -245,9 +245,12 @@ const Cart = () => {
                         </button>
                       </div>
                       <button
-                        onClick={() =>
-                          removeFromCart(item.product._id, item.variantId)
-                        }
+                        onClick={() => {
+                          const ok = window.confirm('Bạn có chắc chắn muốn xoá sản phẩm này không?')
+                          if(ok){
+                            removeFromCart(item.product._id, item.variantId)
+                          }
+                        }}
                         className="text-[13px] text-[#C45C4A] hover:text-[#a34a3c] transition-colors"
                       >
                         Xoá
