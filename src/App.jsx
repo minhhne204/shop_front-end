@@ -98,6 +98,7 @@ function App() {
                     <Route path="/pre-order/cua-toi" element={<MyPreOrders />} />
                     <Route path="/gio-hang" element={<Cart />} />
                     <Route path="/thanh-toan" element={<Checkout />} />
+                    <Route path='/thanh-toan-thanh-cong' element={<PaymentAddress/>}/>
                     <Route path="/thanh-toan/vnpay-return" element={<VNPayReturn />} />
                     <Route path="/dang-nhap" element={<Login />} />
                     <Route path="/dang-ky" element={<Register />} />
