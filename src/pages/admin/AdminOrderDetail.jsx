@@ -90,6 +90,15 @@ const AdminOrderDetail = () => {
     return statuses.findIndex((s) => s.value === status);
   };
 
+  const getPaymentStatusText = (status) => {
+    const statuses = {
+      pending: { text: "Chờ thanh toán", color: "text-[#B4956B]" },
+      paid: { text: "Đã thanh toán", color: "text-[#7C9A82]" },
+      failed: { text: "Thanh toán thất bại", color: "text-[#C45C4A]" },
+    };
+    return statuses[status] || { text: status, color: "text-[#6B6B6B]" };
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -507,6 +516,38 @@ const AdminOrderDetail = () => {
                 .join(", ") || "Chưa có địa chỉ"}
             </p>
           </div>
+
+          {order.paymentMethod === "vnpay" && (
+            <div className="bg-white rounded-2xl border border-[#EBEBEB] p-6">
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <svg
+                    className="w-5 h-5 text-[#7C9A82]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                  <h2 className="text-[15px] font-semibold text-[#2D2D2D]">
+                    Trạng thái thanh toán
+                  </h2>
+                </div>
+                <p
+                  className={`text-[14px] text-[#6B6B6B] bg-[#F5F5F3] p-4 rounded-xl font-medium mt-1 ${
+                    getPaymentStatusText(order.paymentStatus).color
+                  }`}
+                >
+                  {getPaymentStatusText(order.paymentStatus).text}
+                </p>
+              </div>
+            </div>
+          )}
 
           <div className="bg-white rounded-2xl border border-[#EBEBEB] p-6">
             <div className="flex items-center gap-2 mb-4">
