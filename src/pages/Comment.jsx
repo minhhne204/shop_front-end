@@ -37,4 +37,40 @@ if (!user) {
     </div>
   );
 }
+useEffect(() => {
+  const loadComments = async () => {
+    const data = await fetchComments();
+    setComments(data);
+  };
+  loadComments();
+}, []);
+
+if (loading) return <Loading />;
+
+<div className="flex items-baseline gap-4 mb-6">
+            {getCurrentPrice() < getOriginalPrice() ? (
+              <>
+                <span className="text-[28px] font-semibold text-[#C45C4A]">
+                  {formatPrice(getCurrentPrice())}
+                </span>
+                <span className="text-[18px] text-[#9A9A9A] line-through">
+                  {formatPrice(getOriginalPrice())}
+                </span>
+                <span className="bg-[#C45C4A] text-white text-[12px] font-medium px-2.5 py-1 rounded-full">
+                  -
+                  {Math.round(
+                    (1 - getCurrentPrice() / getOriginalPrice()) * 100
+                  )}
+                  %
+                </span>
+              </>
+            ) : (
+              <span className="text-[28px] font-semibold text-[#2D2D2D]">
+                {formatPrice(getCurrentPrice())}
+              </span>
+            )}
+          </div>
+          
+
+
 export default Comment;
